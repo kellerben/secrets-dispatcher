@@ -110,7 +110,7 @@ Checklist for increasing project visibility and adoption.
 
 - [ ] **Export audit logs** — CSV/JSON export for compliance review. Useful for the team lead persona.
 
-- [ ] **Shell completions** — Bash, Zsh, Fish. Low effort, improves polish.
+- [x] **Shell completions** — [carapace](https://carapace.sh) spec ships in `completions/carapace.yaml` (covers bash, fish, zsh, and more). Installed automatically via AUR.
 
 - [ ] **Man page** — `secrets-dispatcher(1)`. Expected by distro packagers.
 

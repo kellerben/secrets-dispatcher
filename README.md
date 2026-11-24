@@ -106,6 +106,14 @@ Now every secret access — and every signed commit — goes through approval, v
 
 </details>
 
+### Shell completions
+
+A [carapace](https://carapace.sh) spec is bundled at `completions/carapace.yaml` and covers bash, fish, zsh, and any other shell carapace supports. AUR users get it installed automatically. For manual installs:
+
+```sh
+cp completions/carapace.yaml ~/.config/carapace/specs/secrets-dispatcher.yaml
+```
+
 ### Gate git commit signing
 
 Route git's signing through the dispatcher, then **turn signing on globally** — that's what makes *every* commit (including the ones your agents make without `-S`) pause for your review before the key is used:
