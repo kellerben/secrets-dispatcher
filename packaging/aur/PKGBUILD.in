@@ -10,6 +10,7 @@ arch=('x86_64' 'aarch64')
 url='https://github.com/nikicat/secrets-dispatcher'
 license=('MIT')
 depends=('glibc')
+optdepends=('carapace: shell completions (bash, fish, zsh, …)')
 makedepends=('go' 'nodejs' 'pnpm' 'git' 'make')
 install=secrets-dispatcher.install
 source=("$pkgname-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz")
@@ -30,4 +31,5 @@ package() {
   install -Dm755 secrets-dispatcher "$pkgdir/usr/bin/secrets-dispatcher"
   install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
   install -Dm644 config.yaml.example "$pkgdir/usr/share/secrets-dispatcher/config.yaml.example"
+  install -Dm644 completions/carapace.yaml "$pkgdir/usr/share/carapace/specs/secrets-dispatcher.yaml"
 }

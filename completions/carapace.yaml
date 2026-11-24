@@ -1,0 +1,189 @@
+# yaml-language-server: $schema=https://carapace.sh/schemas/command.json
+name: secrets-dispatcher
+description: Proxies Secret Service requests from a remote D-Bus to the local Secret Service.
+
+commands:
+  - name: serve
+    description: Start the proxy server and API
+    flags:
+      --config=: "Path to config file (default: $XDG_CONFIG_HOME/secrets-dispatcher/config.yaml)"
+      --log-level=: "Log level (default: info)"
+      --log-format=: "Log format (default: text)"
+      --listen=: "HTTP API listen address (default: 127.0.0.1:8484)"
+      --timeout=: "Approval timeout (default: 5m0s)"
+      --history-limit=: Maximum number of resolved requests to keep in history
+      --state-dir=: "State directory (default: $XDG_STATE_HOME/secrets-dispatcher)"
+      --api-only: Run only the API server (for testing)
+      --notifications: "Enable desktop notifications (default: true)"
+      --no-notifications: Disable desktop notifications
+    completion:
+      flag:
+        config: ["$files([.yaml,.yml])"]
+        log-level: ["debug", "info", "warn", "error"]
+        log-format: ["text", "json"]
+
+  - name: login
+    description: Generate a login URL for the web UI
+    flags:
+      --config=: Path to config file
+      --listen=: "HTTP API listen address (default: 127.0.0.1:8484)"
+      --state-dir=: State directory
+    completion:
+      flag:
+        config: ["$files([.yaml,.yml])"]
+
+  - name: list
+    description: List pending approval requests
+    flags:
+      --config=: Path to config file
+      --state-dir=: State directory
+      --server=: "API server address (default: 127.0.0.1:8484)"
+      --json: Output as JSON
+    completion:
+      flag:
+        config: ["$files([.yaml,.yml])"]
+
+  - name: show
+    description: Show details of a request (pending or resolved)
+    flags:
+      --config=: Path to config file
+      --state-dir=: State directory
+      --server=: "API server address (default: 127.0.0.1:8484)"
+      --json: Output as JSON
+    completion:
+      flag:
+        config: ["$files([.yaml,.yml])"]
+
+  - name: approve
+    description: Approve a pending request
+    flags:
+      --config=: Path to config file
+      --state-dir=: State directory
+      --server=: "API server address (default: 127.0.0.1:8484)"
+      --json: Output as JSON
+    completion:
+      flag:
+        config: ["$files([.yaml,.yml])"]
+
+  - name: deny
+    description: Deny a pending request
+    flags:
+      --config=: Path to config file
+      --state-dir=: State directory
+      --server=: "API server address (default: 127.0.0.1:8484)"
+      --json: Output as JSON
+    completion:
+      flag:
+        config: ["$files([.yaml,.yml])"]
+
+  - name: history
+    description: Show resolved requests
+    flags:
+      --config=: Path to config file
+      --state-dir=: State directory
+      --server=: "API server address (default: 127.0.0.1:8484)"
+      --json: Output as JSON
+    completion:
+      flag:
+        config: ["$files([.yaml,.yml])"]
+
+  - name: config
+    description: Show or manage configuration
+    commands:
+      - name: show
+        description: Show the current configuration
+        flags:
+          --config=: Path to config file
+          --defaults: Show all fields with program defaults filled in
+        completion:
+          flag:
+            config: ["$files([.yaml,.yml])"]
+
+      - name: edit
+        description: Edit config in $EDITOR and optionally restart service
+        flags:
+          --config=: Path to config file
+        completion:
+          flag:
+            config: ["$files([.yaml,.yml])"]
+
+      - name: validate
+        description: Validate config syntax and values
+        flags:
+          --config=: Path to config file
+        completion:
+          flag:
+            config: ["$files([.yaml,.yml])"]
+
+  - name: try
+    description: "Reversible trial: take over the Secret Service, Ctrl-C restores everything"
+    flags:
+      --dry-run: Print what the trial would change, then exit
+      --config=: Base config the trial copies settings from
+      --backend=: "Backend for the trial (path, gopass, gnome-keyring)"
+      --verbose: Narrate every file and unit change
+    completion:
+      flag:
+        config: ["$files([.yaml,.yml])"]
+        backend: ["gopass", "gnome-keyring"]
+
+  - name: service
+    description: Manage the systemd user service
+    commands:
+      - name: install
+        description: Install and enable the systemd user service
+        flags:
+          --start: Start the service immediately after installing (default)
+          --no-start: "Install and enable only, don't start now"
+          --config=: Config file path
+          --mode=: "Topology mode (local, remote, full)"
+          --backend=: Backend for local/full modes
+          --dry-run: Print what the install would change
+          --verbose: Narrate every file and unit change
+        completion:
+          flag:
+            config: ["$files([.yaml,.yml])"]
+            mode: ["local", "remote", "full"]
+            backend: ["gopass", "gnome-keyring"]
+
+      - name: uninstall
+        description: Stop, disable, and remove the systemd user service
+        flags:
+          --verbose: Narrate every file and unit change
+
+      - name: status
+        description: "Doctor-style health report: name owner, unit states, mask/demotion consistency"
+
+  - name: gpg-sign
+    description: GPG signing proxy (called by git as gpg.program)
+    commands:
+      - name: setup
+        description: Configure git to use secrets-dispatcher for GPG signing
+        flags:
+          --local: Configure per-repo instead of globally
+          --remote-socket=: "Sign through this forwarded remote socket (docs/REMOTE-PROXY.md)"
+        completion:
+          flag:
+            remote-socket: ["$files"]
+
+  - name: provision
+    description: Provision companion user and deployment artifacts (requires root)
+    flags:
+      --user=: "Desktop username to provision companion for (default: $SUDO_USER)"
+      --companion-name=: "Override companion username (default: secrets-{user})"
+      --home-base=: "Parent directory for companion homes (default: /var/lib/secret-companion)"
+      --check: Validate deployment instead of provisioning
+
+  - name: daemon
+    description: Run companion daemon (registers on system D-Bus)
+    flags:
+      --bus-address=: "D-Bus address to connect to (default: system bus)"
+      --log-level=: "Log level (default: info)"
+      --log-format=: "Log format (default: text)"
+    completion:
+      flag:
+        log-level: ["debug", "info", "warn", "error"]
+        log-format: ["text", "json"]
+
+  - name: version
+    description: Print the version and exit
